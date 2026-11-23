@@ -178,7 +178,7 @@ export default function LeccionScreen() {
       }
 
       // Usar la utilidad segura para cargar la lección
-      const leccionData = cargarLeccionSegura(nivel, unidad);
+      const leccionData = cargarLeccionSegura(nivel, unidad) as Leccion;
       setLeccion(leccionData);
     } catch (error) {
       console.error('Error cargando lección:', error);
