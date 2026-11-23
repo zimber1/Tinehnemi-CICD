@@ -1,40 +1,12 @@
 {
   "categoria": "Vida cotidiana",
   "palabras": [
-    {
-      "nahuatl": "kaltikpak",
-      "espanol": "dentro de la casa",
-      "audio": "kaltikpak.mp3"
-    },
-    {
-      "nahuatl": "tlapohualoyan",
-      "espanol": "escuela",
-      "audio": "tlapohualoyan.mp3"
-    },
-    {
-      "nahuatl": "tlakatl pilli",
-      "espanol": "joven",
-      "audio": "tlakatl pilli.mp3"
-    },
-    {
-      "nahuatl": "siwatl huehue",
-      "espanol": "mujer anciana",
-      "audio": "siwatl huehue.mp3"
-    },
-    {
-      "nahuatl": "tlamachilistli",
-      "espanol": "enseñanza",
-      "audio": "tlamachilistli.mp3"
-    },
-    {
-      "nahuatl": "tlatskanilistli",
-      "espanol": "despedida",
-      "audio": "tlatskanilistli.mp3"
-    },
-    {
-      "nahuatl": "tlakatl tokayotl",
-      "espanol": "nombre de persona",
-      "audio": "tlakatl tokayotl.mp3"
-    }
+    { "nahuatl": "kaltikpak", "espanol": "dentro de la casa", "audio": "kaltikpak.mp3" },
+    { "nahuatl": "tlapohualoyan", "espanol": "escuela", "audio": "" },
+    { "nahuatl": "tlakatl pilli", "espanol": "joven", "audio": "tlakatl pilli.mp3" },
+    { "nahuatl": "siwatl huehue", "espanol": "mujer anciana", "audio": "siwatl huehue.mp3" },
+    { "nahuatl": "tlamachilistli", "espanol": "enseñanza", "audio": "tlamachilistli.mp3" },
+    { "nahuatl": "tlatskanilistli", "espanol": "despedida", "audio": "tlatskanilistli.mp3" },
+    { "nahuatl": "tlakatl tokayotl", "espanol": "nombre de persona", "audio": "tlakatl tokayotl.mp3" }
   ]
 }
