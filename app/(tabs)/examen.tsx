@@ -244,7 +244,7 @@ export default function ExamenScreen() {
       if (nivel && unidad) {
         dispatch({
           type: 'COMPLETE_UNIT',
-          payload: { nivel: nivel as string, unidad: unidad as string }
+          payload: { nivel: nivel as 'basico' | 'intermedio' | 'avanzado', unidad: unidad as string }
         });
       }
 
