@@ -1,5 +1,5 @@
 // Importaciones principales para la pantalla de minijuegos
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppContext } from '../../contexts/AppContext';
 
@@ -46,10 +46,9 @@ type TipoJuego = 'menu' | 'memorama' | 'frases' | 'ahorcado' | 'quiz';
  * Permite al usuario seleccionar entre diferentes juegos según su nivel
  */
 export default function MinijuegosScreen() {
-  const { state, currentProfile } = useAppContext();
+  const { currentProfile } = useAppContext();
   const [juegoActual, setJuegoActual] = useState<TipoJuego>('menu');
   const [puntuacion, setPuntuacion] = useState(0);
-  const [nivel, setNivel] = useState(1);
 
   /**
    * Lista de juegos disponibles en la aplicación
@@ -132,7 +131,6 @@ export default function MinijuegosScreen() {
     // Inicializar el juego seleccionado
     setJuegoActual(juego.id as TipoJuego);
     setPuntuacion(0);
-    setNivel(1);
     
     // Mostrar instrucciones específicas del juego
     const instrucciones = {
@@ -155,7 +153,6 @@ export default function MinijuegosScreen() {
   const volverAlMenu = () => {
     setJuegoActual('menu');
     setPuntuacion(0);
-    setNivel(1);
   };
 
   /**
@@ -311,7 +308,7 @@ export default function MinijuegosScreen() {
           <TouchableOpacity onPress={volverAlMenu} style={styles.botonVolver}>
             <Text style={styles.botonVolverTexto}>← Volver</Text>
           </TouchableOpacity>
-          <Text style={styles.juegoTitulo}>🧠 Memorama</Text>
+          <Text style={styles.juegoHeaderTitulo}>🧠 Memorama</Text>
           <View style={styles.estadisticas}>
             <Text style={styles.estadisticaTexto}>Movimientos: {movimientos}</Text>
             <Text style={styles.estadisticaTexto}>Puntos: {puntuacion}</Text>
@@ -510,7 +507,7 @@ export default function MinijuegosScreen() {
           <TouchableOpacity onPress={volverAlMenu} style={styles.botonVolver}>
             <Text style={styles.botonVolverTexto}>← Volver</Text>
           </TouchableOpacity>
-          <Text style={styles.juegoTitulo}>🎯 Adivina la palabra</Text>
+          <Text style={styles.juegoHeaderTitulo}>🎯 Adivina la palabra</Text>
           <Text style={styles.estadisticaTexto}>Puntos: {puntuacion}</Text>
         </View>
 
@@ -606,7 +603,7 @@ export default function MinijuegosScreen() {
         return () => clearTimeout(timer);
       } else if (tiempoRestante === 0 && !mostrandoResultado) {
         // Tiempo agotado, procesar como respuesta incorrecta
-        responder('TIEMPO_AGOTADO');
+        responderRef.current('TIEMPO_AGOTADO');
       }
     }, [tiempoRestante, mostrandoResultado]);
 
@@ -718,6 +715,13 @@ export default function MinijuegosScreen() {
       }, 1500);
     };
 
+    // Mantener disponible la versión más reciente de responder sin reiniciar el temporizador.
+    const responderRef = useRef(responder);
+
+    useEffect(() => {
+      responderRef.current = responder;
+    });
+
     if (preguntasQuiz.length === 0) {
       return <Text>Cargando...</Text>;
     }
@@ -731,7 +735,7 @@ export default function MinijuegosScreen() {
           <TouchableOpacity onPress={volverAlMenu} style={styles.botonVolver}>
             <Text style={styles.botonVolverTexto}>← Volver</Text>
           </TouchableOpacity>
-          <Text style={styles.juegoTitulo}>⚡ Quiz Rápido</Text>
+          <Text style={styles.juegoHeaderTitulo}>⚡ Quiz Rápido</Text>
           <View style={styles.estadisticas}>
             <Text style={styles.estadisticaTexto}>
               {preguntaActual + 1}/{preguntasQuiz.length}
@@ -1027,7 +1031,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
   },
-  juegoTitulo: {
+  juegoHeaderTitulo: {
     fontSize: 20,
     fontWeight: 'bold',
     color: 'white',

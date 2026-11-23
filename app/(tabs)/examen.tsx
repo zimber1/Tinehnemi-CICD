@@ -1,6 +1,6 @@
 // Importaciones principales para la pantalla de examen
 import { router } from 'expo-router'; // Navegación entre pantallas
-import React, { useEffect, useState } from 'react'; // React y hooks
+import React, { useCallback, useEffect, useState } from 'react'; // React y hooks
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'; // Componentes básicos de React Native
 import { useAppContext } from '../../contexts/AppContext'; // Contexto global de la aplicación
 import { useRouteParams } from '../../hooks/useRouteParams'; // Hook para obtener parámetros de ruta
@@ -66,43 +66,29 @@ export default function ExamenScreen() {
   const [mostrandoResultados, setMostrandoResultados] = useState(false); // Controla la vista de resultados
   
   // Acceso al contexto global y navegación
-  const { state, dispatch, currentProfile, updateCurrentProfile } = useAppContext();
+  const { dispatch, currentProfile, updateCurrentProfile } = useAppContext();
   const { navigateToHome } = useNavigation();
 
   /**
    * Función para resetear el estado del examen a sus valores iniciales
    * Útil para reiniciar el examen o prepararlo para un nuevo intento
    */
-  const resetearEstado = () => {
-    setExamen(null); // Limpiar datos del examen
-    setPreguntasSeleccionadas([]); // Limpiar preguntas seleccionadas
-    setPreguntaActual(0); // Volver a la primera pregunta
-    setRespuestaSeleccionada(''); // Limpiar respuesta seleccionada
-    setRespuestaTexto(''); // Limpiar respuesta de texto
-    setRespuestasDetalladas([]); // Limpiar historial de respuestas
-    setTiempoInicio(Date.now()); // Reiniciar el temporizador
-    setMostrandoResultados(false); // Ocultar resultados
-  };
-
-  useEffect(() => {
-    // Resetear estado cuando cambian los parámetros
-    resetearEstado();
-    // Los parámetros ahora siempre tienen valores por defecto válidos
-    cargarExamenData();
-  }, [nivel, unidad]);
-
-  // Efecto para limpiar estado al desmontar el componente
-  useEffect(() => {
-    return () => {
-      resetearEstado();
-    };
+  const resetearEstado = useCallback(() => {
+    setExamen(null);
+    setPreguntasSeleccionadas([]);
+    setPreguntaActual(0);
+    setRespuestaSeleccionada('');
+    setRespuestaTexto('');
+    setRespuestasDetalladas([]);
+    setTiempoInicio(Date.now());
+    setMostrandoResultados(false);
   }, []);
 
   /**
    * Carga los datos del examen según el nivel y unidad especificados
    * Selecciona un subconjunto aleatorio de preguntas para el examen actual
    */
-  const cargarExamenData = async () => {
+  const cargarExamenData = useCallback(async () => {
     try {
       // Validar que los parámetros existan
       if (!nivel || !unidad) {
@@ -110,7 +96,7 @@ export default function ExamenScreen() {
       }
 
       // Usar la utilidad segura para cargar el examen
-      const examenData = cargarExamenSeguro(nivel, unidad);
+      const examenData = cargarExamenSeguro(nivel, unidad) as Examen;
       
       // Guardar los datos completos del examen
       setExamen(examenData);
@@ -127,7 +113,12 @@ export default function ExamenScreen() {
       Alert.alert('Error', 'No se pudo cargar el examen');
       router.back(); // Volver a la pantalla anterior en caso de error
     }
-  };
+  }, [nivel, unidad]);
+
+  useEffect(() => {
+    resetearEstado();
+    cargarExamenData();
+  }, [resetearEstado, cargarExamenData]);
 
   const manejarRespuesta = () => {
     if (preguntasSeleccionadas.length === 0) return;
@@ -246,8 +237,6 @@ export default function ExamenScreen() {
     
     // Criterios de aprobación
     const aprobado = porcentaje >= 70; // 70% para aprobar
-    const excelente = porcentaje >= 90; // 90% para excelente
-    const bueno = porcentaje >= 80; // 80% para bueno
 
     // Si el usuario aprobó y hay un perfil activo
     if (aprobado && currentProfile) {
@@ -255,7 +244,7 @@ export default function ExamenScreen() {
       if (nivel && unidad) {
         dispatch({
           type: 'COMPLETE_UNIT',
-          payload: { nivel: nivel as string, unidad: unidad as string }
+          payload: { nivel: nivel as 'basico' | 'intermedio' | 'avanzado', unidad: unidad as string }
         });
       }
 

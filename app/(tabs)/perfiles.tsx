@@ -38,7 +38,7 @@ export default function PerfilesScreen() {
       } else {
         Alert.alert('Éxito', 'Perfil creado correctamente');
       }
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'No se pudo crear el perfil');
     }
   };

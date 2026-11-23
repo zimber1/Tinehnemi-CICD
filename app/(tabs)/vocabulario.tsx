@@ -1,5 +1,5 @@
 // Importaciones principales para la pantalla de vocabulario
-import { Audio } from 'expo-av'; // API de audio de Expo
+import { createAudioPlayer, type AudioPlayer } from 'expo-audio';
 import React, { useEffect, useMemo, useRef, useState } from 'react'; // React y hooks
 import { Alert, Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'; // Componentes básicos de React Native
 import { audioAssets } from '../services/audioService'; // Importar el mapa de assets de audio
@@ -37,7 +37,7 @@ export default function VocabularioScreen() {
   // Estado para la categoría seleccionada actualmente
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string | null>(null);
   // Estado para el objeto de sonido (reproducción de audio)
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const soundRef = useRef<AudioPlayer | null>(null);
   // Estado para el nivel de dificultad seleccionado
   const [nivelSeleccionado, setNivelSeleccionado] = useState<string>('basico');
 
@@ -77,11 +77,10 @@ export default function VocabularioScreen() {
 
     // Limpiar recursos de audio al desmontar
     return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
+      soundRef.current?.release();
+      soundRef.current = null;
     };
-  }, []);
+  }, [fadeAnim, slideAnim]);
 
   /**
    * Efecto que se ejecuta cuando cambia el nivel o categoría seleccionada
@@ -101,7 +100,7 @@ export default function VocabularioScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, [nivelSeleccionado, categoriaSeleccionada]);
+  }, [fadeAnim, slideAnim, nivelSeleccionado, categoriaSeleccionada]);
 
   /**
    * Carga todas las categorías de vocabulario desde archivos JSON
@@ -171,17 +170,17 @@ export default function VocabularioScreen() {
     'Conectores y expresiones': 'Intermedio/conectores',
     'Comida y familia': 'Intermedio/familia',
     'Familia': 'Intermedio/familia', // Nueva entrada para familia.json
-    'Verbos comunes': 'Intermedio/verbos',
+    'Verbos comunes': 'Intermedio/verbos comunes',
     'Tiempos verbales': 'Intermedio/tiempos verbales',
     'Vida cotidiana': 'Intermedio/vida cotidiana',
     
     // Nivel Avanzado
-    'Conceptos abstractos y culturales': 'Avanzado/conceptos abstractos',
+    'Conceptos abstractos y culturales': 'Avanzado/conceptos',
     'Expresiones avanzadas': 'Avanzado/expresiones avanzadas',
     'Elementos naturales y cosmogonía': 'Avanzado/elemntos naturales', // Corregido el typo en la ruta
-    'Plantas de la Sierra': 'Avanzado/plantas sierra',
-    'Naturaleza de la Sierra': 'Avanzado/naturaleza sierra',
-    'Tiempos y celebraciones': 'Avanzado/tiempos celebraciones'
+    'Plantas de la Sierra': 'Intermedio/plantas de la sierra',
+    'Naturaleza de la Sierra': 'Intermedio/naturaleza',
+    'Tiempos y celebraciones': 'Avanzado/tiempos y celebraciones'
   };
 
   /**
@@ -226,44 +225,58 @@ export default function VocabularioScreen() {
    * Reproduce el audio de pronunciación de una palabra
    * @param {string} item - Palabra a reproducir
    */
-  const reproducirAudio = async (item: Palabra) => {
-    if (sound) {
-        await sound.unloadAsync();
-    }
+  const reproducirAudio = (item: Palabra) => {
+    // Detener y liberar cualquier reproducción anterior antes de iniciar otra.
+    const reproductorAnterior = soundRef.current;
+    soundRef.current = null;
+    reproductorAnterior?.release();
 
     if (!categoriaSeleccionada) {
-        console.error('Error: No hay una categoría seleccionada para reproducir el audio.');
-        Alert.alert('Error', 'No se ha seleccionado ninguna categoría.');
-        return;
+      console.error('Error: No hay una categoría seleccionada para reproducir el audio.');
+      Alert.alert('Error', 'No se ha seleccionado ninguna categoría.');
+      return;
     }
 
     const nivelActual = nivelSeleccionado || 'Basico';
     const rutaAudio = obtenerRutaAudio(nivelActual, categoriaSeleccionada, item.audio);
 
-    if (!rutaAudio) {
-        console.error('No se pudo encontrar la ruta del audio para:', item.audio);
-        Alert.alert('Error', 'No se pudo encontrar el audio para esta palabra.');
-        return;
+    if (rutaAudio === null) {
+      console.error('No se pudo encontrar la ruta del audio para:', item.audio);
+      Alert.alert('Error', 'No se pudo encontrar el audio para esta palabra.');
+      return;
     }
+
+    let nuevoReproductor: AudioPlayer | null = null;
 
     try {
-        console.log(`Cargando audio: ${item.audio}`);
-        const { sound: newSound } = await Audio.Sound.createAsync(
-            rutaAudio,
-            { shouldPlay: true }
-        );
-        setSound(newSound);
+      console.log(`Cargando audio: ${item.audio}`);
+      nuevoReproductor = createAudioPlayer(rutaAudio);
+      soundRef.current = nuevoReproductor;
 
-        newSound.setOnPlaybackStatusUpdate((status) => {
-            if (status.isLoaded && status.didJustFinish) {
-                newSound.unloadAsync();
-            }
-        });
+      const suscripcion = nuevoReproductor.addListener('playbackStatusUpdate', (status) => {
+        if (status.isLoaded && status.didJustFinish) {
+          suscripcion.remove();
+
+          if (soundRef.current === nuevoReproductor) {
+            soundRef.current = null;
+          }
+
+          nuevoReproductor?.release();
+        }
+      });
+
+      nuevoReproductor.play();
     } catch (error) {
-        console.error('Error al reproducir el audio:', error);
-        Alert.alert('Error', 'Ocurrió un error al reproducir el audio.');
+      nuevoReproductor?.release();
+
+      if (soundRef.current === nuevoReproductor) {
+        soundRef.current = null;
+      }
+
+      console.error('Error al reproducir el audio:', error);
+      Alert.alert('Error', 'Ocurrió un error al reproducir el audio.');
     }
-};
+  };
 
   /**
    * Filtra las categorías de vocabulario según el nivel de dificultad seleccionado
