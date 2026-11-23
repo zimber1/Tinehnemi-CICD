@@ -4,12 +4,12 @@
     {
       "nahuatl": "Tonaltsintle",
       "espanol": "Sol",
-      "audio": "tonatiuh.mp3"
+      "audio": "tonaltsintle.mp3"
     },
     {
       "nahuatl": "Mejtsintle",
       "espanol": "Luna",
-      "audio": "metztli.mp3"
+      "audio": "mejtsintle.mp3"
     },
     {
       "nahuatl": "tlayowa",
@@ -19,7 +19,7 @@
     {
       "nahuatl": "Tlawilankayotl tlatzehtzeloltik",
       "espanol": "sagrada",
-      "audio": "tlachinolli.mp3"
+      "audio": "Tlawilankayotl tlatzehtzeloltik.mp3"
     },
     {
       "nahuatl": "tlaltikpak",
@@ -29,7 +29,7 @@
     {
       "nahuatl": "tlakatl teotl",
       "espanol": "hombre dios / sacerdote",
-      "audio": "tlakatl_teotl.mp3"
+      "audio": "tlakalt teolt.mp3"
     },
     {
       "nahuatl": "tepetl",
@@ -39,12 +39,12 @@
     {
       "nahuatl": "atl tlakatl",
       "espanol": "hombre del agua",
-      "audio": "atl_tlakatl.mp3"
+      "audio": "alt tlakatl.mp3"
     },
     {
       "nahuatl": "tlachinolli",
       "espanol": "guerra sagrada / dualidad fuego y agua",
-      "audio": "tlachinolli.mp3"
+      "audio": ""
     }
   ]
 }
