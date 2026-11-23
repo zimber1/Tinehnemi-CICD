@@ -4,7 +4,7 @@
     {
       "nahuatl": "tata",
       "espanol": "papá",
-      "audio": "totatzin.mp3"
+      "audio": "tata.mp3"
     },
     {
       "nahuatl": "welti",
@@ -14,7 +14,7 @@
     {
       "nahuatl": "nana",
       "espanol": "mamá",
-      "audio": "nantzin.mp3"
+      "audio": "nana.mp3"
     },
     {
       "nahuatl": "xokoyolt",
@@ -34,17 +34,17 @@
     {
       "nahuatl": "tlaskali",
       "espanol": "tortilla",
-      "audio": "tlaxkal.mp3"
+      "audio": "tlaskali.mp3"
     },
     {
       "nahuatl": "tlelloli",
       "espanol": "maíz",
-      "audio": "tlaolli.mp3"
+      "audio": "tlelloli.mp3"
     },
     {
       "nahuatl": "Tlakwa",
       "espanol": "comer",
-      "audio": "Tlakwa.mp3"
+      "audio": "tlakwa.mp3"
     }
   ]
 }
