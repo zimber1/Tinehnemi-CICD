@@ -37,7 +37,7 @@ export default function VocabularioScreen() {
   // Estado para la categoría seleccionada actualmente
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string | null>(null);
   // Estado para el objeto de sonido (reproducción de audio)
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
   // Estado para el nivel de dificultad seleccionado
   const [nivelSeleccionado, setNivelSeleccionado] = useState<string>('basico');
 
@@ -77,11 +77,12 @@ export default function VocabularioScreen() {
 
     // Limpiar recursos de audio al desmontar
     return () => {
-      if (sound) {
-        sound.unloadAsync();
+      if (soundRef.current) {
+        void soundRef.current.unloadAsync();
+        soundRef.current = null;
       }
     };
-  }, []);
+  }, [fadeAnim, slideAnim]);
 
   /**
    * Efecto que se ejecuta cuando cambia el nivel o categoría seleccionada
@@ -101,7 +102,7 @@ export default function VocabularioScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, [nivelSeleccionado, categoriaSeleccionada]);
+  }, [fadeAnim, slideAnim, nivelSeleccionado, categoriaSeleccionada]);
 
   /**
    * Carga todas las categorías de vocabulario desde archivos JSON
@@ -227,8 +228,9 @@ export default function VocabularioScreen() {
    * @param {string} item - Palabra a reproducir
    */
   const reproducirAudio = async (item: Palabra) => {
-    if (sound) {
-        await sound.unloadAsync();
+    if (soundRef.current) {
+        await soundRef.current.unloadAsync();
+        soundRef.current = null;
     }
 
     if (!categoriaSeleccionada) {
@@ -252,11 +254,12 @@ export default function VocabularioScreen() {
             rutaAudio,
             { shouldPlay: true }
         );
-        setSound(newSound);
+        soundRef.current = newSound;
 
         newSound.setOnPlaybackStatusUpdate((status) => {
             if (status.isLoaded && status.didJustFinish) {
-                newSound.unloadAsync();
+                void newSound.unloadAsync();
+                if (soundRef.current === newSound) soundRef.current = null;
             }
         });
     } catch (error) {
