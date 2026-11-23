@@ -63,7 +63,7 @@ if (fs.existsSync(vocabularyDir)) {
       errors.push(`La estructura de ${file} debe contener un arreglo "palabras".`);
     } else {
       for (const [index, word] of data.palabras.entries()) {
-        if (!word.nahuatl || !word.espanol || !word.audio) {
+        if (!word.nahuatl || !word.espanol || typeof word.audio !== 'string') {
           errors.push(`Registro incompleto en ${file}, palabra ${index + 1}.`);
         }
       }
