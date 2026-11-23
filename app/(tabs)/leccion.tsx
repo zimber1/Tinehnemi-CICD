@@ -7,9 +7,8 @@
  */
 
 import { router, useLocalSearchParams } from 'expo-router'; // Navegación y parámetros de ruta
-import React, { useEffect, useRef, useState } from 'react'; // Hooks de React
+import React, { useCallback, useEffect, useRef, useState } from 'react'; // Hooks de React
 import { Alert, Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'; // Componentes UI
-import { useAppContext } from '../../contexts/AppContext'; // Contexto global de la aplicación
 import { cargarLeccionSegura } from '../../utils/contenido.js'; // Utilidad para cargar lecciones
 
 /**
@@ -102,9 +101,6 @@ export default function LeccionScreen() {
   const [respuestasCorrectas, setRespuestasCorrectas] = useState(0);          // Contador de respuestas correctas
   const [practicaCompletada, setPracticaCompletada] = useState(false);         // Indica si la práctica está completada
   
-  // Acceso al contexto global de la aplicación
-  const { state } = useAppContext();
-  
   // Referencia al ScrollView para controlar el desplazamiento
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -112,7 +108,7 @@ export default function LeccionScreen() {
    * Función para resetear el estado de la lección a sus valores iniciales
    * Se utiliza al cambiar de lección o al desmontar el componente
    */
-  const resetearEstado = () => {
+  const resetearEstado = useCallback(() => {
     setLeccion(null);
     setSeccionActual(0);
     setMostrarPractica(false);
@@ -120,11 +116,32 @@ export default function LeccionScreen() {
     setRespuestaSeleccionada('');
     setRespuestasCorrectas(0);
     setPracticaCompletada(false);
-  };
+  }, []);
 
   // Valores para animaciones de transición entre secciones
   const fadeAnim = useRef(new Animated.Value(0)).current;  // Animación de opacidad (fade in)
   const slideAnim = useRef(new Animated.Value(50)).current; // Animación de deslizamiento vertical
+
+  /**
+   * Carga los datos de la lección desde el sistema de contenido
+   * Utiliza la función segura que garantiza que el contenido existe
+   */
+  const cargarLeccionData = useCallback(async () => {
+    try {
+      // Validar que los parámetros existan
+      if (!nivel || !unidad) {
+        throw new Error('Parámetros de lección faltantes');
+      }
+
+      // Usar la utilidad segura para cargar la lección
+      const leccionData = cargarLeccionSegura(nivel, unidad) as Leccion;
+      setLeccion(leccionData);
+    } catch (error) {
+      console.error('Error cargando lección:', error);
+      Alert.alert('Error', 'No se pudo cargar la lección');
+      router.back(); // Volver a la pantalla anterior en caso de error
+    }
+  }, [nivel, unidad]);
 
   /**
    * Efecto para cargar la lección cuando cambian los parámetros de nivel o unidad
@@ -134,17 +151,7 @@ export default function LeccionScreen() {
     resetearEstado();
     // Los parámetros ahora siempre tienen valores por defecto válidos
     cargarLeccionData();
-  }, [nivel, unidad]);
-
-  /**
-   * Efecto para limpiar el estado cuando se desmonta el componente
-   * Evita fugas de memoria y estados inconsistentes
-   */
-  useEffect(() => {
-    return () => {
-      resetearEstado();
-    };
-  }, []);
+  }, [nivel, unidad, resetearEstado, cargarLeccionData]);
 
   /**
    * Efecto para animar la entrada de contenido cuando cambia la sección,
@@ -164,28 +171,7 @@ export default function LeccionScreen() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, [seccionActual, mostrarPractica, practicaCompletada, ejercicioActual]);
-
-  /**
-   * Carga los datos de la lección desde el sistema de contenido
-   * Utiliza la función segura que garantiza que el contenido existe
-   */
-  const cargarLeccionData = async () => {
-    try {
-      // Validar que los parámetros existan
-      if (!nivel || !unidad) {
-        throw new Error('Parámetros de lección faltantes');
-      }
-
-      // Usar la utilidad segura para cargar la lección
-      const leccionData = cargarLeccionSegura(nivel, unidad) as Leccion;
-      setLeccion(leccionData);
-    } catch (error) {
-      console.error('Error cargando lección:', error);
-      Alert.alert('Error', 'No se pudo cargar la lección');
-      router.back(); // Volver a la pantalla anterior en caso de error
-    }
-  };
+  }, [seccionActual, mostrarPractica, practicaCompletada, ejercicioActual, fadeAnim, slideAnim]);
 
   /**
    * Avanza a la siguiente sección de la lección o a la práctica
