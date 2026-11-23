@@ -110,7 +110,7 @@ export default function ExamenScreen() {
       }
 
       // Usar la utilidad segura para cargar el examen
-      const examenData = cargarExamenSeguro(nivel, unidad);
+      const examenData = cargarExamenSeguro(nivel, unidad) as Examen;
       
       // Guardar los datos completos del examen
       setExamen(examenData);
