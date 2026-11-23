@@ -14,12 +14,12 @@
     {
       "nahuatl": "tlakatl pilli",
       "espanol": "joven",
-      "audio": "tlakatl_pilli.mp3"
+      "audio": "tlakatl pilli.mp3"
     },
     {
       "nahuatl": "siwatl huehue",
       "espanol": "mujer anciana",
-      "audio": "siwatl_huehue.mp3"
+      "audio": "siwatl huehue.mp3"
     },
     {
       "nahuatl": "tlamachilistli",
@@ -34,7 +34,7 @@
     {
       "nahuatl": "tlakatl tokayotl",
       "espanol": "nombre de persona",
-      "audio": "tlakatl_tokayotl.mp3"
+      "audio": "tlakatl tokayotl.mp3"
     }
   ]
 }
