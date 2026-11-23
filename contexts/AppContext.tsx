@@ -96,6 +96,7 @@ const AppContext = createContext<{
   updateCurrentProfile: (data: Partial<UserProgress>) => void; // Actualiza el perfil actual
   saveProfiles: () => Promise<void>; // Guarda los perfiles en AsyncStorage
   loadProfiles: () => Promise<void>; // Carga los perfiles desde AsyncStorage
+  clearAppState: () => Promise<void>; // Limpia el estado y el almacenamiento local
 } | null>(null);
 
 /**
