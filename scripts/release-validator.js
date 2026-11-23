@@ -42,8 +42,8 @@ function validateProject(root = process.cwd()) {
   if(fs.existsSync(audioFile)){
     const source=fs.readFileSync(audioFile,'utf8'), pattern=/require\((["'])(.*?)\1\)/g; let match;
     while((match=pattern.exec(source))!==null){
-      const absolute=path.resolve(path.dirname(audioFile),match[1]);
-      if(!fs.existsSync(absolute)) errors.push(`Recurso de audio inexistente: ${match[1]}`);
+      const absolute=path.resolve(path.dirname(audioFile),match[2]);
+      if(!fs.existsSync(absolute)) errors.push(`Recurso de audio inexistente: ${match[2]}`);
       registeredAudio.add(path.relative(path.join(root,'assets/audio'),absolute).split(path.sep).join('/').toLowerCase());
     }
     if(!registeredAudio.size) errors.push('No se encontraron recursos MP3 registrados.');
