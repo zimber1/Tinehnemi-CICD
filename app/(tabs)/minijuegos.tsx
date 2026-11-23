@@ -311,7 +311,7 @@ export default function MinijuegosScreen() {
           <TouchableOpacity onPress={volverAlMenu} style={styles.botonVolver}>
             <Text style={styles.botonVolverTexto}>← Volver</Text>
           </TouchableOpacity>
-          <Text style={styles.juegoTitulo}>🧠 Memorama</Text>
+          <Text style={styles.juegoHeaderTitulo}>🧠 Memorama</Text>
           <View style={styles.estadisticas}>
             <Text style={styles.estadisticaTexto}>Movimientos: {movimientos}</Text>
             <Text style={styles.estadisticaTexto}>Puntos: {puntuacion}</Text>
@@ -510,7 +510,7 @@ export default function MinijuegosScreen() {
           <TouchableOpacity onPress={volverAlMenu} style={styles.botonVolver}>
             <Text style={styles.botonVolverTexto}>← Volver</Text>
           </TouchableOpacity>
-          <Text style={styles.juegoTitulo}>🎯 Adivina la palabra</Text>
+          <Text style={styles.juegoHeaderTitulo}>🎯 Adivina la palabra</Text>
           <Text style={styles.estadisticaTexto}>Puntos: {puntuacion}</Text>
         </View>
 
@@ -731,7 +731,7 @@ export default function MinijuegosScreen() {
           <TouchableOpacity onPress={volverAlMenu} style={styles.botonVolver}>
             <Text style={styles.botonVolverTexto}>← Volver</Text>
           </TouchableOpacity>
-          <Text style={styles.juegoTitulo}>⚡ Quiz Rápido</Text>
+          <Text style={styles.juegoHeaderTitulo}>⚡ Quiz Rápido</Text>
           <View style={styles.estadisticas}>
             <Text style={styles.estadisticaTexto}>
               {preguntaActual + 1}/{preguntasQuiz.length}
@@ -1027,7 +1027,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
   },
-  juegoTitulo: {
+  juegoHeaderTitulo: {
     fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
