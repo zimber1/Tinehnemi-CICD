@@ -11,7 +11,7 @@ import { AppProvider } from '../contexts/AppContext'; // Proveedor del contexto 
  */
 export default function RootLayout() {
   // Carga las fuentes necesarias para la aplicación
-  const [loaded, error] = useFonts({
+  const [, error] = useFonts({
     ...FontAwesome.font, // Carga los iconos de FontAwesome
   });
 
