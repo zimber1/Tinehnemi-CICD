@@ -65,12 +65,12 @@ interface AppState {
  */
 type AppAction = 
   | { type: 'SET_PROFILES'; payload: UserProgress[] } // Establece todos los perfiles
-  | { type: 'SET_CURRENT_PROFILE'; payload: string } // Cambia el perfil activo
+  | { type: 'SET_CURRENT_PROFILE'; payload: string | null } // Cambia el perfil activo
   | { type: 'ADD_PROFILE'; payload: UserProgress } // Añade un nuevo perfil
   | { type: 'UPDATE_PROFILE'; payload: { id: string; data: Partial<UserProgress> } } // Actualiza un perfil existente
   | { type: 'DELETE_PROFILE'; payload: string } // Elimina un perfil
   | { type: 'SET_LOADING'; payload: boolean } // Cambia el estado de carga
-  | { type: 'COMPLETE_UNIT'; payload: { nivel: string; unidad: string } }; // Marca una unidad como completada
+  | { type: 'COMPLETE_UNIT'; payload: { nivel: UserProgress['nivel']; unidad: string } }; // Marca una unidad como completada
 
 /**
  * Estado inicial de la aplicación
@@ -187,7 +187,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const currentProfile = state.profiles.find(p => p.id === state.currentProfileId) || null;
 
-  const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
+  const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 
   const createProfile = async (name: string): Promise<string> => {
     try {
@@ -196,8 +196,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         throw new Error('El nombre no puede estar vacío');
       }
 
-      // Cheat code: Si el nombre es 'Hesoyam2025', desbloquear todo
-      const isCheatCode = name === 'Hesoyam2025';
+      const isCheatCode = false;
       
       const newProfile: UserProgress = {
         id: generateId(),
@@ -235,8 +234,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       };
 
       console.log('Creando nuevo perfil:', newProfile.usuario);
+      const nextProfiles = [...state.profiles, newProfile];
+      await saveProfiles(nextProfiles, newProfile.id);
       dispatch({ type: 'ADD_PROFILE', payload: newProfile });
-      await saveProfiles();
       console.log('Perfil creado exitosamente:', newProfile.id);
       return newProfile.id;
     } catch (error) {
@@ -250,8 +250,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteProfile = async (profileId: string) => {
+    const nextProfiles = state.profiles.filter(profile => profile.id !== profileId);
+    const nextCurrentId = state.currentProfileId === profileId
+      ? (nextProfiles[0]?.id ?? null)
+      : state.currentProfileId;
+    await saveProfiles(nextProfiles, nextCurrentId);
     dispatch({ type: 'DELETE_PROFILE', payload: profileId });
-    await saveProfiles();
   };
 
   const updateCurrentProfile = (data: Partial<UserProgress>) => {
@@ -266,20 +270,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const clearAppState = async () => {
     try {
-      await AsyncStorage.clear();
+      await AsyncStorage.multiRemove(['profiles', 'currentProfileId', 'userProgress']);
       dispatch({ type: 'SET_PROFILES', payload: [] });
-      dispatch({ type: 'SET_CURRENT_PROFILE', payload: '' });
+      dispatch({ type: 'SET_CURRENT_PROFILE', payload: null });
       console.log('Estado de la aplicación limpiado');
     } catch (error) {
       console.error('Error limpiando estado:', error);
     }
   };
 
-  const saveProfiles = async () => {
+  const saveProfiles = async (
+    profiles: UserProgress[] = state.profiles,
+    currentProfileId: string | null = state.currentProfileId
+  ) => {
     try {
-      console.log('Guardando perfiles:', state.profiles.length);
-      await AsyncStorage.setItem('profiles', JSON.stringify(state.profiles));
-      await AsyncStorage.setItem('currentProfileId', state.currentProfileId || '');
+      console.log('Guardando perfiles:', profiles.length);
+      await AsyncStorage.setItem('profiles', JSON.stringify(profiles));
+      await AsyncStorage.setItem('currentProfileId', currentProfileId ?? '');
       console.log('Perfiles guardados exitosamente');
     } catch (error) {
       console.error('Error guardando perfiles:', error);
@@ -298,9 +305,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           id: generateId(),
           fechaCreacion: new Date().toISOString()
         };
+        await saveProfiles([migratedProfile], migratedProfile.id);
         dispatch({ type: 'ADD_PROFILE', payload: migratedProfile });
         await AsyncStorage.removeItem('userProgress');
-        await saveProfiles();
         return;
       }
 
