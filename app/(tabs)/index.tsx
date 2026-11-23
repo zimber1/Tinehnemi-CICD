@@ -1,6 +1,6 @@
 // Importaciones principales para la pantalla de inicio
 import { router } from 'expo-router'; // Navegación entre pantallas
-import React, { useEffect, useState } from 'react'; // React y hooks necesarios
+import React, { useCallback, useEffect, useState } from 'react'; // React y hooks necesarios
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'; // Componentes UI
 import { useAppContext } from '../../contexts/AppContext'; // Contexto global de la aplicación
 
@@ -22,43 +22,18 @@ interface Unidad {
  */
 export default function InicioScreen() {
   // Obtener estado global y perfil actual del contexto
-  const { state, currentProfile, createProfile } = useAppContext();
+  const { state, currentProfile } = useAppContext();
   // Estado local para las unidades de aprendizaje
   const [unidades, setUnidades] = useState<Unidad[]>([]);
   // Estado para el nivel seleccionado (básico, intermedio, avanzado)
   const [nivelSeleccionado, setNivelSeleccionado] = useState<Nivel>('basico');
 
   /**
-   * Efecto para manejar la navegación inicial y cargar las unidades
-   * según el perfil del usuario
-   */
-  useEffect(() => {
-    if (state.profiles.length === 0 && !state.isLoading) {
-      // Si no hay perfiles, redirigir a onboarding para crear uno
-      router.replace('/(tabs)/onboarding');
-      return;
-    }
-
-    if (!currentProfile && state.profiles.length > 0) {
-      // Si hay perfiles pero ninguno seleccionado, ir a selección de perfiles
-      router.push('/(tabs)/perfiles');
-      return;
-    }
-
-    // Cargar unidades según el nivel actual del usuario
-    if (currentProfile) {
-      const nivelValido = currentProfile.nivel || 'basico';
-      setNivelSeleccionado(nivelValido);
-      cargarUnidades(nivelValido);
-    }
-  }, [currentProfile, state.profiles, state.isLoading]); // Dependencias del efecto
-
-  /**
    * Carga las unidades de aprendizaje según el nivel seleccionado
    * y marca cuáles están completadas o bloqueadas
    * @param {string} nivel - Nivel de dificultad (basico, intermedio, avanzado)
    */
-  const cargarUnidades = (nivel: Nivel) => {
+  const cargarUnidades = useCallback((nivel: Nivel) => {
     if (!currentProfile) return;
 
     // Obtener las unidades que el usuario ya ha completado en este nivel
@@ -275,7 +250,29 @@ export default function InicioScreen() {
     }
 
     setUnidades(unidadesEjemplo);
-  };
+  }, [currentProfile]);
+
+  /**
+   * Efecto para manejar la navegación inicial y cargar las unidades
+   * según el perfil del usuario
+   */
+  useEffect(() => {
+    if (state.profiles.length === 0 && !state.isLoading) {
+      router.replace('/(tabs)/onboarding');
+      return;
+    }
+
+    if (!currentProfile && state.profiles.length > 0) {
+      router.push('/(tabs)/perfiles');
+      return;
+    }
+
+    if (currentProfile) {
+      const nivelValido = (currentProfile.nivel || 'basico') as Nivel;
+      setNivelSeleccionado(nivelValido);
+      cargarUnidades(nivelValido);
+    }
+  }, [currentProfile, state.profiles, state.isLoading, cargarUnidades]);
 
   /**
    * Cambia el nivel seleccionado y carga las unidades correspondientes
@@ -422,19 +419,6 @@ export default function InicioScreen() {
         return '#8E44AD'; // Morado más oscuro
       default:
         return '#2980B9';
-    }
-  };
-
-  const getNivelGradient = () => {
-    switch (nivelSeleccionado) {
-      case 'basico':
-        return ['#3498DB', '#2874A6']; // Azul
-      case 'intermedio':
-        return ['#2ECC71', '#27AE60']; // Verde
-      case 'avanzado':
-        return ['#9B59B6', '#8E44AD']; // Morado
-      default:
-        return ['#3498DB', '#2874A6'];
     }
   };
 
