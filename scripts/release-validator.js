@@ -17,6 +17,10 @@ const CATEGORY_AUDIO_DIRS = {
   'Tiempos y celebraciones': 'Avanzado/tiempos y celebraciones',
 };
 
+const AUDIO_PATH_OVERRIDES = {
+  'tiempos_verbales.json:tetahmej': 'Avanzado/tiempos y celebraciones/tetahmej.mp3',
+};
+
 function readJson(root, file, errors) {
   try { return JSON.parse(fs.readFileSync(path.join(root, file), 'utf8')); }
   catch (error) { errors.push(`JSON inválido en ${file}: ${error.message}`); return null; }
@@ -36,7 +40,7 @@ function validateProject(root = process.cwd()) {
 
   const registeredAudio=new Set(), audioFile=path.join(root,'app/services/audioService.ts');
   if(fs.existsSync(audioFile)){
-    const source=fs.readFileSync(audioFile,'utf8'), pattern=/require\(['"]([^'"]+\.mp3)['"]\)/g; let match;
+    const source=fs.readFileSync(audioFile,'utf8'), pattern=/require\((["'])(.*?)\1\)/g; let match;
     while((match=pattern.exec(source))!==null){
       const absolute=path.resolve(path.dirname(audioFile),match[1]);
       if(!fs.existsSync(absolute)) errors.push(`Recurso de audio inexistente: ${match[1]}`);
@@ -56,7 +60,8 @@ function validateProject(root = process.cwd()) {
         if(!word.nahuatl||!word.espanol||typeof word.audio!=='string'){errors.push(`Registro incompleto en ${file}, palabra ${index+1}.`);continue;}
         if(word.audio.trim()){
           audioReferences++;
-          const key=`${directory}/${word.audio}`.toLowerCase();
+          const override=AUDIO_PATH_OVERRIDES[`${file}:${word.nahuatl}`];
+          const key=(override||`${directory}/${word.audio}`).toLowerCase();
           if(directory&&!registeredAudio.has(key)) errors.push(`Audio no registrado para "${word.nahuatl}" en ${file}: ${key}`);
         }
       }
