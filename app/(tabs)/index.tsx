@@ -281,7 +281,7 @@ export default function InicioScreen() {
    * Cambia el nivel seleccionado y carga las unidades correspondientes
    * @param {string} nivel - Nuevo nivel a seleccionar
    */
-  const cambiarNivel = (nivel: string) => {
+  const cambiarNivel = (nivel: Nivel) => {
     setNivelSeleccionado(nivel);
     cargarUnidades(nivel);
   };
