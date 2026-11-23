@@ -170,17 +170,17 @@ export default function VocabularioScreen() {
     'Conectores y expresiones': 'Intermedio/conectores',
     'Comida y familia': 'Intermedio/familia',
     'Familia': 'Intermedio/familia', // Nueva entrada para familia.json
-    'Verbos comunes': 'Intermedio/verbos',
+    'Verbos comunes': 'Intermedio/verbos comunes',
     'Tiempos verbales': 'Intermedio/tiempos verbales',
     'Vida cotidiana': 'Intermedio/vida cotidiana',
     
     // Nivel Avanzado
-    'Conceptos abstractos y culturales': 'Avanzado/conceptos abstractos',
+    'Conceptos abstractos y culturales': 'Avanzado/conceptos',
     'Expresiones avanzadas': 'Avanzado/expresiones avanzadas',
     'Elementos naturales y cosmogonía': 'Avanzado/elemntos naturales', // Corregido el typo en la ruta
-    'Plantas de la Sierra': 'Avanzado/plantas sierra',
-    'Naturaleza de la Sierra': 'Avanzado/naturaleza sierra',
-    'Tiempos y celebraciones': 'Avanzado/tiempos celebraciones'
+    'Plantas de la Sierra': 'Intermedio/plantas de la sierra',
+    'Naturaleza de la Sierra': 'Intermedio/naturaleza',
+    'Tiempos y celebraciones': 'Avanzado/tiempos y celebraciones'
   };
 
   /**
