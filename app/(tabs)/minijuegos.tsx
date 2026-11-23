@@ -153,7 +153,6 @@ export default function MinijuegosScreen() {
   const volverAlMenu = () => {
     setJuegoActual('menu');
     setPuntuacion(0);
-    setNivel(1);
   };
 
   /**
@@ -721,7 +720,7 @@ export default function MinijuegosScreen() {
 
     useEffect(() => {
       responderRef.current = responder;
-    }, [responder]);
+    });
 
     if (preguntasQuiz.length === 0) {
       return <Text>Cargando...</Text>;
