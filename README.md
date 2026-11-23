@@ -7,7 +7,7 @@ Aplicación educativa móvil para el aprendizaje del náhuatl, desarrollada con 
 - Node.js 20.x
 - npm 10 o superior
 - Git
-- Cuenta de Expo para generar compilaciones Android con EAS
+- Cuenta de Expo para compilaciones Android con EAS
 
 ## Instalación
 
@@ -15,24 +15,18 @@ Aplicación educativa móvil para el aprendizaje del náhuatl, desarrollada con 
 npm ci
 ```
 
-## Validación local
-
-Ejecuta las verificaciones en este orden:
+## Validación y pruebas
 
 ```bash
 npm run typecheck
 npm run lint
+npm test
+npm run test:release
 npx expo-doctor
-npm run test:release
+npx expo export --platform android
 ```
 
-También puedes ejecutar las verificaciones de código juntas:
-
-```bash
-npm run check
-npm run prepare:release
-npm run test:release
-```
+El comando `npm run check` ejecuta TypeScript, ESLint y las pruebas unitarias. El comando `npm run test:release` valida la configuración Expo/EAS, la estructura de los archivos de vocabulario y la correspondencia de los recursos de audio.
 
 ## Desarrollo
 
@@ -43,28 +37,38 @@ npm run ios
 npm run web
 ```
 
-## CI – GitHub Actions
+## Integración continua
 
-El flujo **CI - Tinehnemi** se ejecuta en cada Pull Request hacia `main` o `develop`, y en los pushes a ambas ramas. Instala dependencias con `npm ci` y ejecuta TypeScript, ESLint, Expo Doctor, las verificaciones de release y la exportación Android.
+El workflow **CI - Tinehnemi** se ejecuta en Pull Requests y pushes a `main` y `develop`. Incluye instalación reproducible con `npm ci`, TypeScript, ESLint, pruebas unitarias, Expo Doctor, validación de release y exportación Android.
 
-## CD – Android con EAS
+## Seguridad y dependencias
 
-El flujo **CD - Liberación Android Tinehnemi** se ejecuta manualmente desde Actions o al publicar una etiqueta `v*`.
+- Dependabot revisa semanalmente dependencias npm y mensualmente GitHub Actions.
+- El workflow **Security audit** genera un reporte de vulnerabilidades de npm en cada Pull Request y semanalmente. El reporte queda disponible como artefacto de Actions.
+- No se deben guardar tokens, contraseñas ni archivos `.env` en el repositorio.
 
-Configura el secreto `EXPO_TOKEN` en:
+## Liberación Android con EAS
+
+El workflow **CD - Liberación Android Tinehnemi** se ejecuta manualmente desde GitHub Actions o al publicar una etiqueta `v*`.
+
+Configura el secreto:
 
 **GitHub → Settings → Secrets and variables → Actions → New repository secret**
 
-El flujo usa el perfil `production` de `eas.json` y genera una compilación Android con EAS Build.
+- Nombre: `EXPO_TOKEN`
+- Valor: token de acceso de Expo de la cuenta propietaria del proyecto.
+
+Perfiles disponibles:
+
+```bash
+npx eas build --platform android --profile preview
+npx eas build --platform android --profile production
+```
 
 ## Ramas y Pull Requests
 
 - `main`: rama estable.
-- `develop`: integración de cambios.
+- `develop`: integración del equipo.
 - Usa ramas descriptivas para cada corrección o funcionalidad.
-- Abre Pull Requests hacia `develop` o `main` según el flujo del equipo.
-- No incluyas tokens, contraseñas ni archivos `.env` en Git.
-
-## Versiones y compilación
-
-La configuración de Expo se encuentra en `app.json` y los perfiles de compilación en `eas.json`. Las dependencias deben instalarse desde el `package-lock.json` mediante `npm ci`.
+- Abre Pull Requests y espera a que los workflows requeridos terminen correctamente.
+- Revisa los cambios de dependencias y el reporte de seguridad antes de integrar.
