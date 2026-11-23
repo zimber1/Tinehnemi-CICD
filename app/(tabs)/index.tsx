@@ -7,6 +7,8 @@ import { useAppContext } from '../../contexts/AppContext'; // Contexto global de
 /**
  * Interfaz que define la estructura de una unidad de aprendizaje
  */
+type Nivel = 'basico' | 'intermedio' | 'avanzado';
+
 interface Unidad {
   id: string;       // Identificador único de la unidad
   titulo: string;   // Título descriptivo de la unidad
@@ -24,7 +26,7 @@ export default function InicioScreen() {
   // Estado local para las unidades de aprendizaje
   const [unidades, setUnidades] = useState<Unidad[]>([]);
   // Estado para el nivel seleccionado (básico, intermedio, avanzado)
-  const [nivelSeleccionado, setNivelSeleccionado] = useState<string>('basico');
+  const [nivelSeleccionado, setNivelSeleccionado] = useState<Nivel>('basico');
 
   /**
    * Efecto para manejar la navegación inicial y cargar las unidades
@@ -56,7 +58,7 @@ export default function InicioScreen() {
    * y marca cuáles están completadas o bloqueadas
    * @param {string} nivel - Nivel de dificultad (basico, intermedio, avanzado)
    */
-  const cargarUnidades = (nivel: string) => {
+  const cargarUnidades = (nivel: Nivel) => {
     if (!currentProfile) return;
 
     // Obtener las unidades que el usuario ya ha completado en este nivel
@@ -621,10 +623,10 @@ export default function InicioScreen() {
       
       <View style={styles.motivationContainer}>
         <Text style={styles.motivationText}>
-          "Ma tihchiwakaj, ma titlamachti náhuatl."
+          &quot;Ma tihchiwakaj, ma titlamachti náhuatl.&quot;
         </Text>
         <Text style={styles.motivationTranslation}>
-          "Vamos a hacer, vamos a estudiar náhuatl."
+          &quot;Vamos a hacer, vamos a estudiar náhuatl.&quot;
         </Text>
       </View>
     </ScrollView>
