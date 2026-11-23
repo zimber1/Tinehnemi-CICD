@@ -15,16 +15,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: npm
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Verify Expo token
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          if [ -z "$EXPO_TOKEN" ]; then
+            echo "::error::Configure EXPO_TOKEN in repository Actions secrets before starting an Android release."
+            exit 1
+          fi
 
       - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8
@@ -36,6 +45,7 @@ jobs:
         run: |
           npm run check
           npm run test:release
+          npx expo-doctor
 
       - name: Build Android
         run: eas build --platform android --profile production --non-interactive
