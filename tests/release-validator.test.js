@@ -69,3 +69,30 @@ test('detecta recursos MP3 declarados que no existen', () => {
     assert.ok(validateProject(root).errors.some(error => error.includes('Recurso de audio inexistente')));
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
+
+
+test('acepta nombres de audio con apóstrofo y rutas de categoría específicas', () => {
+  const root = fixture();
+  try {
+    const write = (file, value) => {
+      const target = path.join(root, file);
+      fs.mkdirSync(path.dirname(target), { recursive: true });
+      fs.writeFileSync(target, value);
+    };
+    write("assets/audio/Intermedio/naturaleza/tlal'li.mp3", 'fixture');
+    write('assets/audio/Avanzado/tiempos y celebraciones/tetahmej.mp3', 'fixture');
+    const service = path.join(root, 'app/services/audioService.ts');
+    fs.appendFileSync(service, '\nconst extra = require("../../assets/audio/Intermedio/naturaleza/tlal\'li.mp3");');
+    fs.appendFileSync(service, '\nconst ancestors = require("../../assets/audio/Avanzado/tiempos y celebraciones/tetahmej.mp3");');
+    write('data/vocabulario/naturaleza_sierra.json', JSON.stringify({
+      categoria: 'Naturaleza de la Sierra',
+      palabras: [{ nahuatl: 'Tlal-li', espanol: 'Tierra', audio: "tlal'li.mp3" }],
+    }));
+    write('data/vocabulario/tiempos_verbales.json', JSON.stringify({
+      categoria: 'Tiempos verbales',
+      palabras: [{ nahuatl: 'tetahmej', espanol: 'ancestros', audio: 'tetahmej.mp3' }],
+    }));
+    const result = validateProject(root);
+    assert.deepEqual(result.errors, []);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});
