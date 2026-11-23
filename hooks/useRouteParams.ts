@@ -16,7 +16,7 @@ export function useSafeRouteParams<T extends Record<string, string>>(defaultValu
   const safeParams = {} as T;
   
   for (const key in defaultValues) {
-    safeParams[key] = (params[key] as string) || defaultValues[key];
+    safeParams[key] = ((params[key] as string | undefined) || defaultValues[key]) as T[typeof key];
   }
   
   return safeParams;
