@@ -4,7 +4,7 @@
     {
       "nahuatl": "Kojtlan",
       "espanol": "Bosque o monte",
-      "audio": "cuauhtla.mp3"
+      "audio": "kojtlan.mp3"
     },
     {
       "nahuatl": "Tlal-li",
@@ -14,17 +14,17 @@
     {
       "nahuatl": "Yejiegatl",
       "espanol": "Aire o viento",
-      "audio": "ehecatl.mp3"
+      "audio": "yejiegatl.mp3"
     },
     {
       "nahuatl": "Mixtli",
       "espanol": "Nube",
-      "audio": "mixpantli.mp3"
+      "audio": "mixtli.mp3"
     },
     {
       "nahuatl": "sitlali",
       "espanol": "estrella",
-      "audio": "citlalli.mp3"
+      "audio": "sitlali.mp3"
     },
     {
       "nahuatl": "tepetl",
@@ -49,7 +49,7 @@
     {
       "nahuatl": "quiahuitl",
       "espanol": "lluvia",
-      "audio": "quiahuitl.mp3"
+      "audio": "kuiahuitl.mp3"
     }
   ]
 }
