@@ -10,11 +10,12 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm run lint",
+    "check": "npm run typecheck && npm run lint && npm test",
     "prepare:release": "npx expo-doctor",
     "test:release": "node scripts/validate-release.js",
     "eas:build:preview": "eas build --platform android --profile preview",
-    "eas:build:production": "eas build --platform android --profile production"
+    "eas:build:production": "eas build --platform android --profile production",
+    "test": "node --test"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
