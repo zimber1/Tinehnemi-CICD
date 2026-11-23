@@ -72,3 +72,7 @@ npx eas build --platform android --profile production
 - Usa ramas descriptivas para cada corrección o funcionalidad.
 - Abre Pull Requests y espera a que los workflows requeridos terminen correctamente.
 - Revisa los cambios de dependencias y el reporte de seguridad antes de integrar.
+
+## Pruebas automatizadas
+
+Las pruebas unitarias usan `node:test` y se ejecutan con `npm test`. La validación de release también comprueba que cada referencia de audio del vocabulario exista en el catálogo de recursos estáticos.
